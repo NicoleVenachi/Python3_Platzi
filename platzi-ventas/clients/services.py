@@ -24,7 +24,7 @@ class ClientService:
         clients = self.list_clients()  # Veo la lista de los clientes
         updated_clients = []
         for client in clients:
-            if client['uid'] == updated_client['uid']:
+            if client['uid'] == updated_client.uid:
                 updated_clients.append(updated_client.to_dict())  # Lo paso a diccionario para escribir en el archivo de comas, eso significa que el updated client es una instancia del modelo
             else:
                 updated_clients.append(client)  # Si los clientes tienen el mismo id, lo actualiza
@@ -32,10 +32,21 @@ class ClientService:
         self._save_to_disk(updated_clients)
 
 
-    def _save_to_disk(clients):
+    def _save_to_disk(self, clients):
         tmp_table_name = self.table_name + '.tmp'
-        with open(tmp_table_name) as f:
+        with open(tmp_table_name, mode='w') as f:
             writter = csv.DictWriter(f, fieldnames = Client.schema())
-            writer.writerows(clients)
+            writter.writerows(clients)
         os.remove(self.table_name)
         os.rename(tmp_table_name, self.table_name)
+
+
+    def delete_client(self, client_to_delete):
+        clients = self.list_clients()
+        for client in clients:
+            if client_to_delete.uid == client['uid']:
+                clients.remove(client)
+                break
+            else:
+                continue
+        self._save_to_disk(clients)

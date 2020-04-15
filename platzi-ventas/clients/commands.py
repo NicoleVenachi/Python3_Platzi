@@ -52,6 +52,8 @@ def list(ctx):
 
 
 @clients.command()  # Hace que este sea un comando de clients
+@click.argument('client_uid',
+                type = str)
 @click.pass_context
 def update(ctx, client_uid):
     """Updates a client"""
@@ -78,9 +80,30 @@ def _update_client_flow(client):
 
 
 @clients.command()  # Hace que este sea un comando de clients
+@click.argument('client_uid',
+                type = str)
 @click.pass_context
 def delete(ctx, client_uid):
     """Deletes a client"""
-    pass
+    client_service = ClientService(ctx.obj['clients_table'])
+    client_list = client_service.list_clients()
+    client = [client for client in client_list if client['uid'] == client_uid]
+
+
+    if client:
+
+        delete_confimation = click.prompt('Are you sure you want to delete? [Y/N]', type = str, default='N')
+        delete_confimation = delete_confimation.upper()
+
+        if delete_confimation == 'Y':
+            client_service.delete_client(Client(**client[0]))
+            click.echo('Client Deleted Succesfully')
+
+        elif delete_confimation == 'N':
+            click.echo('Aborted')
+        else:
+            click.echo('Wrong Command')
+    else:
+        click.echo('Client not found')
 
 all = clients  # Creo alias a clients
