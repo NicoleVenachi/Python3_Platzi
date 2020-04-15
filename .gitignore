@@ -1,2 +1,7 @@
 *.pdf
 servidor/venv/*
+platzi-ventas/venv/*
+platzi-ventas/build/*
+platzi-ventas/dist/*
+platzi-ventas/pv.egg.info/*
+platzi-ventas/__pycache__/*
